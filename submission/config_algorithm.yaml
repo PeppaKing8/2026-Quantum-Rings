@@ -1,0 +1,28 @@
+# Configuration for algorithm/family classification
+
+# Feature extraction
+feature_registry: default_no_context
+use_graph_features: true
+
+# Model architecture
+global_feature_dim: 28  # Overridden by registry total_dim at runtime
+hidden_dim: 64
+num_layers: 2
+gate_embedding_dim: 16
+qp_embedding_dim: 16
+max_gate_arity: 3
+max_qubits: 150
+
+# Training hyperparameters
+batch_size: 16
+num_epochs: 200
+val_every_n_epochs: 5
+lr: 0.001
+weight_decay: 0.0001
+num_workers: 0
+
+# Reproducibility
+seed: 42
+
+# Experiment directory
+exp_dir: exp/algorithm

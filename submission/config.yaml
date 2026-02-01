@@ -1,0 +1,82 @@
+# Configuration for iQuHACK 2026 Training Pipeline
+# Threshold classification architecture
+
+# Data settings
+# Uses fixed split from CIRCUITS.md:
+#   train: 24 circuits (recommended training set)
+#   val: 12 circuits (recommended test set)
+
+# Feature extraction
+feature_registry: default  # Options: 'default', 'minimal', 'extended'
+
+# Model architecture
+use_graph_features: false  # Use GNN for circuit DAG features
+use_global_features: true
+
+# Feature dimensions
+global_feature_dim: 32  # Global circuit features (default registry)
+
+# GNN node features (learned embeddings)
+gate_embedding_dim: 16  # Learned gate type embedding
+qp_embedding_dim: 16  # Qubit-position embedding dim (shared for element-wise multiply)
+max_gate_arity: 3  # Max qubits per gate (ccx = 3)
+max_qubits: 150  # Max qubits for qubit embedding
+
+# GNN architecture
+gnn_type: bipartite
+hidden_dim: 64  # Hidden dimension for GNN and backbone
+num_layers: 4  # Number of GNN layers
+dropout: 0.2  # Dropout rate (global_mlp + backbone
+
+# Threshold classification
+num_threshold_classes: 10  # 9 threshold bins (0-8) + no_threshold_met (9)
+
+# Circuit family embedding (IMPORTANT: family is a strong predictor)
+use_circuit_family: true
+num_circuit_families: 21  # 20 known families + 1 unknown
+circuit_family_embedding_dim: 64  # Larger embedding for rich family representation
+family_hidden_dim: 64  # Hidden dim for family processing MLP
+use_film: true  # FiLM: family modulates backbone output (gamma*x + beta)
+use_family_residual_heads: true  # Family-specific baseline added to threshold + runtime
+
+# Threshold embedding for runtime head (optional)
+use_threshold_input: true  # Whether to feed threshold as input to runtime head
+threshold_embedding_dim: 2
+
+# Training hyperparameters
+batch_size: 32  # Smaller batch for graph data
+num_epochs: 1000
+val_every_n_epochs: 10  # Validate every N epochs (speeds up training)
+lr: 0.005  # Learning rate
+lr_min: 0.00001  # Minimum LR for cosine annealing
+warmup_epochs: 10  # Linear warmup epochs
+weight_decay: 0.001  # L2 regularization
+
+# Loss and inference strategy
+# true: ModifiedCELoss (geometric decay) + argmax inference
+# false: standard CrossEntropyLoss + utility-maximizing inference
+use_modified_ce: true
+
+# Loss weights
+threshold_weight: 1.0  # Weight for threshold classification loss
+runtime_weight: 1.0  # Weight for runtime loss (masked to ok samples)
+
+use_layernorm: true
+use_residual: true
+
+# Data loader
+num_workers: 0  # Number of dataloader workers
+
+# Reproducibility
+seed: 42
+
+# Experiment directory
+exp_dir: exp/default
+
+# Wandb logging (optional)
+wandb:
+  enabled: true
+  project: iquhack-2026
+  entity: ppk8-tsinghua-university    # wandb team/username, or ~ for default
+  name: fam_res_reprod_1      # run name, or ~ to auto-use exp_dir name
+  key: ~       # API key, or ~ to use WANDB_API_KEY env / wandb login
