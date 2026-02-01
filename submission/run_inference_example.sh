@@ -1,2 +1,0 @@
-python inference_merge.py --exp-dir algorithm_good/ --model-path fam_res_reprod_1/best_model.pt --qasm ../circuits/ghz_indep_qiskit_30.qasm --runtime-threshold 2 --algo-reject-th
-reshold 0.7 --config config.yaml
